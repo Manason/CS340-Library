@@ -28,6 +28,9 @@ http.listen(process.env.PORT || 8080, function(){
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/public/index.html');
 });
+app.get('/donate/book', function(req, res){
+	res.sendFile(__dirname + '/public/donateBook.html');
+});
 app.use(express.static('public')); //serves index.html
 
 //receive client events
