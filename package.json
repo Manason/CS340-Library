@@ -1,0 +1,25 @@
+{
+  "name": "cs340-library",
+  "version": "1.0.0",
+  "description": "A Library for cs340",
+  "main": "Server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Manason/CS340-Library.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Manason/CS340-Library/issues"
+  },
+  "homepage": "https://github.com/Manason/CS340-Library#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "mysql": "^2.15.0",
+    "socketio": "^1.0.0"
+  }
+}
