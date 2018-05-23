@@ -3,16 +3,16 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
 var http = require('http').Server(app);
-
+var config = require('./config.json');
 var io = require('socket.io')(http);
 
 //database setup and connection
 var mysql = require('mysql');
 
 var con = mysql.createConnection({
-	host: "hostname",
-	user: "username",
-	password: "password"
+	host: config.dbhost,
+	user: config.dbuser,
+	password: config.dbpass
 });
 
 con.connect(function(err) {
