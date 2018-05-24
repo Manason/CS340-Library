@@ -4,17 +4,38 @@
 <head>
 	<title>Library Catalog</title>
 	<link type="text/css" rel="stylesheet" href="/css/index.css">
+	<script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
 <h1>Library Catalog</h1>
-<ul>
+<ul id="nav">
 	<li><a href="/donate/book">Donate Book</a></li>
 	<li><a href="/donate/film">Donate Film</a></li>
 </ul>
 
+<main>
+	
+</main>
+
+
 <script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
 <script>
 	var socket = io();
+	socket.emit('getCatalog');
+	socket.on('catalog',function(data){
+		console.log(data);
+		data.forEach(function(item){
+			console.log(item.title);
+			var title = $('<span></span>').addClass('listingTitle').text(item.title);
+			var author = $('<span></span>').addClass('listingAuthor').text(item.author);
+			var section = $('<span></span>').addClass('listingSection').text(item.sectionName);
+			var type = $('<span></span>').addClass('listingType').text(item.type);
+			var listing = $('<div/>').addClass('listing').append(title,author,section,type);
+			console.log(listing);
+			$('main').append(listing);
+		});
+	});
 </script>
 </body>
 </html>

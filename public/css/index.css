@@ -29,3 +29,33 @@ textarea{
 	border-radius:4px;
 	font-size:18px;
 }
+#nav{
+	list-style-type: none;
+}
+#nav li{
+	margin:20px;
+	padding:10px;
+	display:inline;
+}
+#nav li a{
+	text-decoration:none;
+	color:rgb(70,70,70);
+}
+#nav li a:visited{
+	color:rgb(70,70,70);
+}
+.listing{
+	margin: 10px 20px;
+	box-shadow:0 0 3px grey;
+}
+.listing span{
+	margin: 0 30px;
+}
+.listing .listingTitle{
+	font-size:32px;
+	display:block;
+	margin-left: 50px;
+}
+.listing .listingAuthor{
+	display:block;
+}

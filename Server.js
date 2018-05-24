@@ -41,6 +41,12 @@ app.use(express.static('public')); //serves index.html
 //receive client events
 io.on('connection', function(socket){
 	console.log("a user connected");
+	socket.on('getCatalog',function(data){
+		var getCatalog = "SELECT DISTINCT M.title, B.author, M.sectionName, M.type FROM Media M, Book B WHERE M.mediaID=B.mediaID ORDER BY M.mediaID DESC LIMIT 7";
+		con.query(getCatalog,function(err,res){
+			socket.emit('catalog',res)
+		});
+	});
 	socket.on('bookdonate', function(data){ insertion.insertBook(data,con) });
 	socket.on('filmdonate', function(data){ insertion.insertFilm(data,con) });
 	
