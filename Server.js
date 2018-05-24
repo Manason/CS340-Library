@@ -5,6 +5,7 @@ var app = express();
 var http = require('http').Server(app);
 var config = require('./config.json');
 var io = require('socket.io')(http);
+var insertion = require('./insertion.js');
 
 //database setup and connection
 var mysql = require('mysql');
@@ -12,7 +13,8 @@ var mysql = require('mysql');
 var con = mysql.createConnection({
 	host: config.dbhost,
 	user: config.dbuser,
-	password: config.dbpass
+	password: config.dbpass,
+	database: "cs340_edwarda3"
 });
 
 con.connect(function(err) {
@@ -31,14 +33,15 @@ app.get('/', function(req, res){
 app.get('/donate/book', function(req, res){
 	res.sendFile(__dirname + '/public/donateBook.html');
 });
+app.get('/donate/film', function(req, res){
+	res.sendFile(__dirname + '/public/donateFilm.html');
+});
 app.use(express.static('public')); //serves index.html
 
 //receive client events
 io.on('connection', function(socket){
 	console.log("a user connected");
-	socket.on('bookdonate', function(data){
-		console.log(data.title);
-		console.log(data.author);
-	});
+	socket.on('bookdonate', function(data){ insertion.insertBook(data,con) });
+	socket.on('filmdonate', function(data){ insertion.insertFilm(data,con) });
 	
 });

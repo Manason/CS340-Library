@@ -1,7 +1,7 @@
 <!DOCTYPE html> 
 <html>
 <head>
-	<title>Donate a book</title>
+	<title>Donate a film</title>
 	<link type="text/css" rel="stylesheet" href="/css/index.css">
 	<script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
@@ -12,12 +12,12 @@
 	
 		Title:<br>
 		<input type="text" id="newTitle" name="newTitle" class="titleInput"><br>
-		Author:<br>
-		<input type="text" id="newAuthor" name="newAuthor" class="authorInput"><br>
+		Director:<br>
+		<input type="text" id="newDirector" name="newDirector" class="authorInput"><br>
 		Description:<br>
 		<textarea type="text" id="newDescription" name="newDescription" class="descInput"></textarea><br>
-		Pages:<br>
-		<input type="number" id="newNumPages" name="newNumPages" class="pagesInput"><br>
+		Length (Minutes):<br>
+		<input type="number" id="newLength" name="newLength" class="pagesInput"><br>
 		Genre:<br>
 		<input type="text" id="newSection" name="newSection" class="genreInput"><br>
 		
@@ -31,8 +31,8 @@
 	var socket = io();
 	$('#submit').click(function(){
 		console.log("sending data to the server");
-		var data = {title : $('#newTitle').val(), author : $('#newAuthor').val(), desc : $('#newDescription').val(), pages : $('#newNumPages').val(), section : $('#newSection').val()};
-		socket.emit('bookdonate', data); 
+		var data = {title : $('#newTitle').val(), director : $('#newDirector').val(), desc : $('#newDescription').val(), length : $('#newLength').val(), section : $('#newSection').val()};
+		socket.emit('filmdonate', data); 
 	});
 </script>
 </html>
