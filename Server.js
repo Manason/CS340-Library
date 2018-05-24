@@ -36,4 +36,9 @@ app.use(express.static('public')); //serves index.html
 //receive client events
 io.on('connection', function(socket){
 	console.log("a user connected");
+	socket.on('bookdonate', function(data){
+		console.log(data.title);
+		console.log(data.author);
+	});
+	
 });
