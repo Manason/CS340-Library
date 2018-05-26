@@ -24,6 +24,8 @@
 <script>
 	var socket = io();
 	$('#submit').click(function(){
+		$('span').remove('.alert');
+		$('br').remove('.alert');
 		var hashed = hashCode($('#newPassword').val());
 		var data = {userID : $('#newUser').val(), password : hashed};
 		socket.emit('signup', data); 
@@ -31,9 +33,9 @@
 	socket.on('dupUserID',function(){
 		console.log("unavailable");
 		var usernameAlert = $('<span/>').addClass('alert').text("Username '"+$('#newUser').val()+"' not available");
-		console.log(usernameAlert)
+		console.log(usernameAlert);
 		usernameAlert.insertBefore('#newUser');
-		$('<br>').insertBefore('#newUser');
+		$('<br>').addClass('alert').insertBefore('#newUser');
 	});
 	function hashCode(str){
 		var hash = 0;
