@@ -5,7 +5,7 @@ var app = express();
 var http = require('http').Server(app);
 var config = require('./config.json');
 var io = require('socket.io')(http);
-var insertion = require('./insertion.js');
+var sqlQueries = require('./sqlQueries.js');
 
 //database setup and connection
 var mysql = require('mysql');
@@ -36,18 +36,17 @@ app.get('/donate/book', function(req, res){
 app.get('/donate/film', function(req, res){
 	res.sendFile(__dirname + '/public/donateFilm.html');
 });
+app.get('/signup', function(req, res){
+	res.sendFile(__dirname + '/public/signup.html');
+});
 app.use(express.static('public')); //serves index.html
 
 //receive client events
 io.on('connection', function(socket){
 	console.log("a user connected");
-	socket.on('getCatalog',function(data){
-		var getCatalog = "SELECT DISTINCT M.title, B.author, M.sectionName, M.type FROM Media M, Book B WHERE M.mediaID=B.mediaID ORDER BY M.mediaID DESC LIMIT 7";
-		con.query(getCatalog,function(err,res){
-			socket.emit('catalog',res)
-		});
-	});
-	socket.on('bookdonate', function(data){ insertion.insertBook(data,con) });
-	socket.on('filmdonate', function(data){ insertion.insertFilm(data,con) });
-	
+	socket.on('getCatalog',function(data){ sqlQueries.getCatalog(data,con,socket); });
+	socket.on('getMedia',function(data){ sqlQueries.getAllMedia(data,con,socket); });
+	socket.on('bookdonate', function(data){ sqlQueries.insertBook(data,con); });
+	socket.on('filmdonate', function(data){ sqlQueries.insertFilm(data,con); });
+	socket.on('signup', function(data){ sqlQueries.createUser(data,con,socket); });
 });

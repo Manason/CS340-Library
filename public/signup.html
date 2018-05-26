@@ -1,0 +1,50 @@
+<!DOCTYPE html> 
+<html>
+<head>
+	<title>Donate a book</title>
+	<link type="text/css" rel="stylesheet" href="/css/index.css">
+	<script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+	<h1>Sign Up for a Library Account</h1>
+	
+		Username:<br>
+		<input type="text" id="newUser" name="newUser" class="titleInput"><br>
+		Password:<br>
+		<input type="text" id="newPassword" name="newPassword" class="passwordInput"><br>
+		
+		<input id="submit" type="submit" value="Submit">
+	
+
+
+</body>
+
+<script>
+	var socket = io();
+	$('#submit').click(function(){
+		var hashed = hashCode($('#newPassword').val());
+		var data = {userID : $('#newUser').val(), password : hashed};
+		socket.emit('signup', data); 
+	});
+	socket.on('dupUserID',function(){
+		console.log("unavailable");
+		var usernameAlert = $('<span/>').addClass('alert').text("Username '"+$('#newUser').val()+"' not available");
+		console.log(usernameAlert)
+		usernameAlert.insertBefore('#newUser');
+		$('<br>').insertBefore('#newUser');
+	});
+	function hashCode(str){
+		var hash = 0;
+		if(str.length==0){ return hash; }
+		for(var i=0; i<str.length; i++){
+			var c = str.charCodeAt(i);
+			hash = ((hash << 5)-hash)+c;
+			hash = hash & hash;
+		}
+		return hash;
+	}
+</script>
+</html>
+

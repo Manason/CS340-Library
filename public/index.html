@@ -12,6 +12,7 @@
 <ul id="nav">
 	<li><a href="/donate/book">Donate Book</a></li>
 	<li><a href="/donate/film">Donate Film</a></li>
+	<li><a href="/signup">Sign Up</a></li>
 </ul>
 
 <main>
@@ -26,15 +27,22 @@
 	socket.on('catalog',function(data){
 		console.log(data);
 		data.forEach(function(item){
-			console.log(item.title);
-			var title = $('<span></span>').addClass('listingTitle').text(item.title);
-			var author = $('<span></span>').addClass('listingAuthor').text(item.author);
-			var section = $('<span></span>').addClass('listingSection').text(item.sectionName);
-			var type = $('<span></span>').addClass('listingType').text(item.type);
-			var listing = $('<div/>').addClass('listing').append(title,author,section,type);
-			console.log(listing);
-			$('main').append(listing);
+			var data = {mediaID: item.mediaID, type : item.type};
+				socket.emit('getMedia',data);
 		});
+	});
+	socket.on('media',function(item){
+		var title = $('<span/>').addClass('listingTitle').text(item[0].title);
+		var creator;
+		if(item[0].author!=null){
+			creator = $('<span/>').addClass('listingCreator').text(item[0].author);
+		} else if(item[0].director!=null){
+			creator = $('<span/>').addClass('listingCreator').text(item[0].director);
+		}
+		var section = $('<span/>').addClass('listingSection').text(item[0].sectionName);
+		var type = $('<span/>').addClass('listingType').text(item[0].type);
+		var listing = $('<div/>').addClass('listing').append(title,creator,section,type);
+		$('main').append(listing);
 	});
 </script>
 </body>

@@ -49,5 +49,39 @@ module.exports = {
 			}
 		});
 		
+	},
+	getAllMedia : function(data,con,socket){
+		if(data.type=="book"){
+			var getMedia = "SELECT DISTINCT M.title, B.author, M.sectionName FROM Media M, Book B WHERE M.mediaID=B.mediaID AND M.mediaID=?";
+			con.query(getMedia,[data.mediaID],function(err,res){
+				socket.emit('media',res);
+			});
+		}
+		else if(data.type=="film"){
+			var getMedia = "SELECT DISTINCT M.title, F.director, M.sectionName FROM Media M, Film F WHERE M.mediaID=F.mediaID AND M.mediaID=?";
+			con.query(getMedia,[data.mediaID],function(err,res){
+				socket.emit('media',res);
+			});
+		}
+	},
+	getCatalog : function(data,con,socket){
+		var getCatalog = "SELECT DISTINCT M.mediaID, M.type FROM Media M";
+		con.query(getCatalog,function(err,res){
+			socket.emit('catalog',res);
+		});
+	},
+	createUser : function(data,con,socket){
+		var checkUser = "SELECT COUNT(*) AS dup FROM User WHERE userID=? GROUP BY userID";
+		con.query(checkUser,[data.userID],function(err,res){
+			if(res.length==0){
+				var ins = "INSERT INTO User(userID,password) VALUES (?,?)"
+				con.query(ins,[data.userID,data.password],function(err2,res2){
+					if(err) console.log("Unable to create user "+data.userID);
+					console.log("Created User "+data.userID);
+				});
+			} else {
+				socket.emit('dupUserID');
+			}
+		});
 	}
 };
