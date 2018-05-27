@@ -16,6 +16,16 @@
 </ul>
 
 <main>
+	<div id="mediaOverlay" class="hidden">
+		<div id="overlayCanvas">
+			<h2 id="mediaTitle"></h2>
+			<h3 id="mediaCreator"></h4>
+			<span id="mediaCopies"></span><br>
+			<span id="mediaType"></span><br>
+			<span id="avgRating"></span><br><hr><hr>
+			<div id="reviews"></div>
+		</div>
+	</div>
 	
 </main>
 
@@ -40,8 +50,53 @@
 		}
 		var section = $('<span/>').addClass('listingSection').text(item[0].sectionName);
 		var type = $('<span/>').addClass('listingType').text(item[0].type);
-		var listing = $('<div/>').addClass('listing').append(title,creator,section,type);
+		var listingLink = $('<a/>').addClass('mediaLink').append(title,creator,section,type);
+		var listing = $('<div/>').addClass('listing').append(listingLink);
 		$('main').append(listing);
+	});
+	$('main').bind("click","a", function(event){
+		if($('#mediaOverlay').hasClass('hidden')){
+			var container = $(event.target);
+			while(!container.is("div")){
+				container = container.parent();
+			}
+			if(container.hasClass('listing')){
+				var mediaTitle = container.find('.listingTitle').text();
+				var mediaCreator = container.find('.listingCreator').text();
+				var mediaType = container.find('.listingType').text();
+				
+				//Might want to change this to go to another page instead?
+				var data = {title : mediaTitle, creator : mediaCreator, type : mediaType}
+				socket.emit('getInfo',data);
+			}
+		}
+	});
+	$('#mediaOverlay').bind("click", function(event){
+		if($(event.target).attr('id')=='mediaOverlay'){
+			$('#mediaOverlay').removeClass('overlay').addClass('hidden');
+			$('#reviews').empty();
+		}
+	});
+	socket.on('mediaInfo',function(data){
+		$('#mediaTitle').text(data.title);
+		$('#mediaCreator').text(data.creator);
+		$('#mediaCopies').text("Copies: "+data.copies);
+		$('#mediaType').text("Type: "+data.type);
+		data.reviews.forEach(function(item){
+			var review = $('<div/>').addClass('reviewEntry');
+			var reviewer = $('<span/>').addClass('reviewer').text(item.userID);
+			var rating = $('<span/>').addClass('rating').text(item.rating);
+			var description = $('<p/>').addClass('description').text(item.description);
+			review.append(reviewer,rating,description);
+			$('#reviews').append(review,$('<hr>'));
+		});
+		var total=0; var count=0;
+		$('.rating').each(function(){
+			total+=parseInt($(this).text());
+			count+=1;
+		});
+		$('#avgRating').text("Average Rating: "+(total/count).toFixed(1).toString());
+		$('#mediaOverlay').removeClass('hidden').addClass('overlay')
 	});
 </script>
 </body>

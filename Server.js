@@ -49,6 +49,7 @@ io.on('connection', function(socket){
 	console.log("a user connected");
 	socket.on('getCatalog',function(data){ sqlQueries.getCatalog(data,con,socket); });
 	socket.on('getMedia',function(data){ sqlQueries.getMedia(data,con,socket); });
+	socket.on('getInfo',function(data){ sqlQueries.getInfo(data,con,socket); });
 	socket.on('getUsers',function(data){ sqlQueries.getUsers(data,con,socket); });
 	socket.on('bookdonate', function(data){ sqlQueries.insertBook(data,con); });
 	socket.on('filmdonate', function(data){ sqlQueries.insertFilm(data,con); });
