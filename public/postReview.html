@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+	<title>Library Catalog</title>
+	<link type="text/css" rel="stylesheet" href="/css/index.css">
+	<script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+	<h1>Post Review</h1>
+	<main>
+		Media to Review:<br>
+		<select id="mediaChooser"></select><br>
+		User:<br>
+		<select id="userChooser"></select><br>
+		Review:<br>
+		<input type="range" min="1" max="5" value="3" class="slider" id="rating"><span id="ratingNum">3</span><br>
+		<textarea type="text" id="newDescription" name="newDescription" class="descInput"></textarea><br>
+		
+		<input id="submit" type="submit" value="Submit">
+	</main>
+
+
+<script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+<script>
+	$('#rating').bind("change", function(){
+		console.log('dasdsa')
+		$('#ratingNum').text($('#rating').val());
+	});
+
+	var socket = io();
+	socket.emit('getCatalog');
+	socket.on('catalog',function(data){
+		data.forEach(function(item){
+			var data = {mediaID: item.mediaID, type : item.type};
+				socket.emit('getMedia',data);
+		});
+	});
+	socket.on('media',function(item){
+		$('#mediaChooser').append( new Option(item[0].title,item[0].mediaID));
+	});
+	socket.emit('getUsers');
+	socket.on('users',function(data){
+		data.forEach(function(item){
+			$('#userChooser').append( new Option(item.userID,item.userID));
+		});
+	});
+	
+	$('#submit').click(function(){
+		$('span').remove('.alert');
+		$('br').remove('.alert');
+		var data = {mediaID : $('#mediaChooser').val(), userID : $('#userChooser').val(), rating: $('#rating').val(), desc: $('#newDescription').val()}
+		console.log(data);
+		socket.emit('postReview',data);
+	});
+	
+	socket.on('reviewFailed',function(){
+		$('<span/>').addClass('alert').text("Review Failed to Post!").insertBefore('#submit');
+		$('<br>').addClass('alert').insertBefore('#submit');
+	});
+	socket.on('reviewPosted',function(){
+		$('<span/>').addClass('alert success').text("Review Added successfully!").insertBefore('#submit');
+		$('<br>').addClass('alert').insertBefore('#submit');
+	});
+</script>
+</body>
+</html>
+

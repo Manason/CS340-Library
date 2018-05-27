@@ -25,7 +25,6 @@
 	var socket = io();
 	socket.emit('getCatalog');
 	socket.on('catalog',function(data){
-		console.log(data);
 		data.forEach(function(item){
 			var data = {mediaID: item.mediaID, type : item.type};
 				socket.emit('getMedia',data);

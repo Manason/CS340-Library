@@ -1,9 +1,7 @@
 module.exports = {
 	insertBook : function(data,con){
-		console.log(data);
 		var check = "SELECT COUNT(*) AS entries FROM Media M, Book B WHERE M.mediaID=B.mediaID AND M.title=? AND B.author=?";
 		con.query(check,[data.title,data.author],function(err,res){
-			console.log(res[0].entries)
 			if(res[0].entries==0){
 				var ins = "INSERT INTO Media(title,description,type,sectionName,imageURL) VALUES(?,?,'book',?,NULL)"
 				con.query(ins,[data.title,data.desc,data.section],function(err,res){
@@ -26,10 +24,8 @@ module.exports = {
 	insertFilm : function(data,con){
 		console.log(data);
 		var check = "SELECT COUNT(*) AS entries FROM Media M, Film F WHERE M.mediaID=F.mediaID AND M.title=? AND F.director=?";
-		console.log(check)
 		con.query(check,[data.title,data.director],function(err,res){
 			if(err) throw err;
-			console.log(res[0].entries)
 			if(res[0].entries==0){
 				var ins = "INSERT INTO Media(title,description,type,sectionName,imageURL) VALUES(?,?,'film',?,NULL)"
 				con.query(ins,[data.title,data.desc,data.section],function(err,res){
@@ -50,15 +46,15 @@ module.exports = {
 		});
 		
 	},
-	getAllMedia : function(data,con,socket){
+	getMedia : function(data,con,socket){
 		if(data.type=="book"){
-			var getMedia = "SELECT DISTINCT M.title, B.author, M.sectionName FROM Media M, Book B WHERE M.mediaID=B.mediaID AND M.mediaID=?";
+			var getMedia = "SELECT DISTINCT M.mediaID, M.title, B.author, M.sectionName FROM Media M, Book B WHERE M.mediaID=B.mediaID AND M.mediaID=?";
 			con.query(getMedia,[data.mediaID],function(err,res){
 				socket.emit('media',res);
 			});
 		}
 		else if(data.type=="film"){
-			var getMedia = "SELECT DISTINCT M.title, F.director, M.sectionName FROM Media M, Film F WHERE M.mediaID=F.mediaID AND M.mediaID=?";
+			var getMedia = "SELECT DISTINCT M.mediaID, M.title, F.director, M.sectionName FROM Media M, Film F WHERE M.mediaID=F.mediaID AND M.mediaID=?";
 			con.query(getMedia,[data.mediaID],function(err,res){
 				socket.emit('media',res);
 			});
@@ -82,6 +78,23 @@ module.exports = {
 			} else {
 				socket.emit('dupUserID');
 			}
+		});
+	},
+	getUsers : function(data,con,socket){
+		var getCatalog = "SELECT DISTINCT userID FROM User";
+		con.query(getCatalog,function(err,res){
+			socket.emit('users',res);
+		});
+	},
+	postReview : function(data,con,socket){var date = new Date();
+		var yr = date.getFullYear();
+		var mo = ('0'+(date.getMonth()+1)).slice(-2);
+		var day = ('0' + date.getDate()).slice(-2);
+		var today = yr+'-'+mo+'-'+day;
+		var post = "INSERT INTO Review(mediaID,userID,rating,description,upvotes,date) VALUES(?,?,?,?,0,?)";
+		con.query(post,[data.mediaID,data.userID,data.rating,data.desc,today],function(err,res){
+			if(err){ socket.emit('reviewFailed'); }
+			socket.emit('reviewPosted');
 		});
 	}
 };

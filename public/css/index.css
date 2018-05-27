@@ -62,3 +62,12 @@ textarea{
 .alert{
 	color:red;
 }
+.success{
+	color:green;
+}
+#rating{
+	width:100px;
+}
+#ratingNum{
+	padding:10px;
+}

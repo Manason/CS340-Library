@@ -33,7 +33,6 @@
 	socket.on('dupUserID',function(){
 		console.log("unavailable");
 		var usernameAlert = $('<span/>').addClass('alert').text("Username '"+$('#newUser').val()+"' not available");
-		console.log(usernameAlert);
 		usernameAlert.insertBefore('#newUser');
 		$('<br>').addClass('alert').insertBefore('#newUser');
 	});

@@ -39,14 +39,19 @@ app.get('/donate/film', function(req, res){
 app.get('/signup', function(req, res){
 	res.sendFile(__dirname + '/public/signup.html');
 });
+app.get('/postreview', function(req, res){
+	res.sendFile(__dirname + '/public/postReview.html');
+});
 app.use(express.static('public')); //serves index.html
 
 //receive client events
 io.on('connection', function(socket){
 	console.log("a user connected");
 	socket.on('getCatalog',function(data){ sqlQueries.getCatalog(data,con,socket); });
-	socket.on('getMedia',function(data){ sqlQueries.getAllMedia(data,con,socket); });
+	socket.on('getMedia',function(data){ sqlQueries.getMedia(data,con,socket); });
+	socket.on('getUsers',function(data){ sqlQueries.getUsers(data,con,socket); });
 	socket.on('bookdonate', function(data){ sqlQueries.insertBook(data,con); });
 	socket.on('filmdonate', function(data){ sqlQueries.insertFilm(data,con); });
 	socket.on('signup', function(data){ sqlQueries.createUser(data,con,socket); });
+	socket.on('postReview', function(data){ sqlQueries.postReview(data,con,socket); });
 });
