@@ -10,6 +10,7 @@ var sqlQueries = require('./sqlQueries.js');
 //database setup and connection
 var mysql = require('mysql');
 
+/*
 var con = mysql.createConnection({
 	host: config.dbhost,
 	user: config.dbuser,
@@ -21,7 +22,7 @@ con.connect(function(err) {
 	if(err) throw err;
 	console.log("Connected to Database");
 });
-
+*/
 
 //server startup
 http.listen(process.env.PORT || 8080, function(){
@@ -47,12 +48,12 @@ app.use(express.static('public')); //serves index.html
 //receive client events
 io.on('connection', function(socket){
 	console.log("a user connected");
-	socket.on('getCatalog',function(data){ sqlQueries.getCatalog(data,con,socket); });
+	/*socket.on('getCatalog',function(data){ sqlQueries.getCatalog(data,con,socket); });
 	socket.on('getMedia',function(data){ sqlQueries.getMedia(data,con,socket); });
 	socket.on('getInfo',function(data){ sqlQueries.getInfo(data,con,socket); });
 	socket.on('getUsers',function(data){ sqlQueries.getUsers(data,con,socket); });
 	socket.on('bookdonate', function(data){ sqlQueries.insertBook(data,con); });
 	socket.on('filmdonate', function(data){ sqlQueries.insertFilm(data,con); });
 	socket.on('signup', function(data){ sqlQueries.createUser(data,con,socket); });
-	socket.on('postReview', function(data){ sqlQueries.postReview(data,con,socket); });
+	socket.on('postReview', function(data){ sqlQueries.postReview(data,con,socket); });*/
 });
