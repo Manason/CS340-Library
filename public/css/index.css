@@ -84,6 +84,7 @@ textarea{
 	background-color: rgba(0,0,0,0.5);
 	z-index: 2;
 	cursor: pointer;
+	overflow:auto;
 }
 #overlayCanvas{
 	background-color: rgba(220,220,220);
@@ -95,6 +96,7 @@ textarea{
 }
 .overlay{
 	display:block;
+
 }
 .reviewer{
 	font-size:30px;
