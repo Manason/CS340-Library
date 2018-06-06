@@ -19,7 +19,7 @@ var pool = mysql.createPool({
 });
 
 //server startup
-http.listen(process.env.PORT || 34031, function(){
+http.listen(parseInt(process.argv[2]), function(){
 	console.log("server running on port " + this.address().port);
 });
 
