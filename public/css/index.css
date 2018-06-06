@@ -47,17 +47,21 @@ textarea{
 .listing{
 	margin: 10px 20px;
 	box-shadow:0 0 3px grey;
+	overflow:auto;
 }
 .listing span{
 	margin: 0 30px;
 }
+.listing .listingImage{
+	max-height:150px;
+	float:left;
+}
 .listing .listingTitle{
 	font-size:32px;
-	display:block;
 	margin-left: 50px;
 }
-.listing .listingAuthor{
-	display:block;
+.listing .info{
+	list-style-type:none;
 }
 .alert{
 	color:red;

@@ -48,13 +48,13 @@ module.exports = {
 	},
 	getMedia : function(data,con,socket){
 		if(data.type=="book"){
-			var getMedia = "SELECT DISTINCT M.mediaID, M.title, B.author, M.sectionName, M.type FROM Media M, Book B WHERE M.mediaID=B.mediaID AND M.mediaID=?";
+			var getMedia = "SELECT DISTINCT M.mediaID, M.title, B.author, M.sectionName, M.type, M.imageURL FROM Media M, Book B WHERE M.mediaID=B.mediaID AND M.mediaID=?";
 			con.query(getMedia,[data.mediaID],function(err,res){
 				socket.emit('media',res);
 			});
 		}
 		else if(data.type=="film"){
-			var getMedia = "SELECT DISTINCT M.mediaID, M.title, F.director, M.sectionName, M.type FROM Media M, Film F WHERE M.mediaID=F.mediaID AND M.mediaID=?";
+			var getMedia = "SELECT DISTINCT M.mediaID, M.title, F.director, M.sectionName, M.type, M.imageURL FROM Media M, Film F WHERE M.mediaID=F.mediaID AND M.mediaID=?";
 			con.query(getMedia,[data.mediaID],function(err,res){
 				socket.emit('media',res);
 			});
@@ -63,8 +63,8 @@ module.exports = {
 	getInfo : function(data,con,socket){
 		var output = {}
 		var getMediaInfo = "";
-		if(data.type=="book"){ getMediaInfo = "SELECT M.mediaID,M.title,M.type,B.author,COUNT(*) AS copies FROM Media M, Book B WHERE M.mediaID=B.mediaID AND M.title=? AND B.author=? GROUP BY M.mediaID"; }
-		if(data.type=="film"){ getMediaInfo = "SELECT M.mediaID,M.title,M.type,F.director,COUNT(*) AS copies FROM Media M, Film F WHERE M.mediaID=F.mediaID AND M.title=? AND F.director=? GROUP BY M.mediaID"; }
+		if(data.type=="book"){ getMediaInfo = "SELECT M.mediaID,M.title,M.type,B.author,M.imageURL,COUNT(*) AS copies FROM Media M, Book B WHERE M.mediaID=B.mediaID AND M.title=? AND B.author=? GROUP BY M.mediaID"; }
+		if(data.type=="film"){ getMediaInfo = "SELECT M.mediaID,M.title,M.type,F.director,M.imageURL,COUNT(*) AS copies FROM Media M, Film F WHERE M.mediaID=F.mediaID AND M.title=? AND F.director=? GROUP BY M.mediaID"; }
 		con.query(getMediaInfo,[data.title,data.creator],function(err,res){
 			if(err) throw err;
 			output['mediaID']=res[0].mediaID;
@@ -73,7 +73,8 @@ module.exports = {
 			if(res[0].author==null){ output['creator']=res[0].director; }
 			output['copies']=res[0].copies;
 			output['type']=res[0].type;
-			var getReviews = "SELECT userID,rating,description From Review WHERE mediaID=?"
+			output['imageURL']=res[0].type;
+			var getReviews = "SELECT userID,rating,description From Review WHERE mediaID=?";
 			con.query(getReviews,[output.mediaID],function(err2, res2){
 				output['reviews']=res2;
 				socket.emit('mediaInfo',output);

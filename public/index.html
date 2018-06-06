@@ -41,16 +41,18 @@
 		});
 	});
 	socket.on('media',function(item){
-		var title = $('<span/>').addClass('listingTitle').text(item[0].title);
+		var cover = $('<img>').addClass('listingImage').attr('src',item[0].imageURL);
+		var title = $('<li/>').addClass('listingTitle').text(item[0].title);
 		var creator;
 		if(item[0].author!=null){
-			creator = $('<span/>').addClass('listingCreator').text(item[0].author);
+			creator = $('<li/>').addClass('listingCreator').text(item[0].author);
 		} else if(item[0].director!=null){
-			creator = $('<span/>').addClass('listingCreator').text(item[0].director);
+			creator = $('<li/>').addClass('listingCreator').text(item[0].director);
 		}
-		var section = $('<span/>').addClass('listingSection').text(item[0].sectionName);
+		var section = $('<li/>').addClass('listingSection').text(item[0].sectionName);
 		var type = $('<span/>').addClass('listingType').text(item[0].type);
-		var listingLink = $('<a/>').addClass('mediaLink').append(title,creator,section,type);
+		var info = $('<ul/>').addClass('listingText').append(title,creator,section);
+		var listingLink = $('<a/>').addClass('mediaLink').append(cover,info,type);
 		var listing = $('<div/>').addClass('listing').append(listingLink);
 		$('main').append(listing);
 	});
@@ -74,11 +76,13 @@
 	$('#mediaOverlay').bind("click", function(event){
 		if($(event.target).attr('id')=='mediaOverlay'){
 			$('#mediaOverlay').removeClass('overlay').addClass('hidden');
+			$('.coverImage').remove();
 			$('#reviews').empty();
 		}
 	});
 	socket.on('mediaInfo',function(data){
 		$('#mediaTitle').text(data.title);
+		$('<img/>').addClass('mediaImage').attr('src',data.imageURL).insertBefore( $('#mediaTitle') );
 		$('#mediaCreator').text(data.creator);
 		$('#mediaCopies').text("Copies: "+data.copies);
 		$('#mediaType').text("Type: "+data.type);
