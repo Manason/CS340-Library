@@ -10,23 +10,20 @@ var sqlQueries = require('./sqlQueries.js');
 //database setup and connection
 var mysql = require('mysql');
 
-var con = mysql.createConnection({
+var pool = mysql.createPool({
+	connectionLimit: 100,
 	host: config.dbhost,
 	user: config.dbuser,
 	password: config.dbpass,
 	database: "cs340_edwarda3"
 });
 
-con.connect(function(err) {
-	if(err) throw err;
-	console.log("Connected to Database");
-});
-
-
 //server startup
 http.listen(process.env.PORT || 8080, function(){
 	console.log("server running on port " + this.address().port);
 });
+
+//routings
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/public/index.html');
 });
@@ -44,15 +41,81 @@ app.get('/postreview', function(req, res){
 });
 app.use(express.static('public')); //serves index.html
 
+
+
 //receive client events
 io.on('connection', function(socket){
+	
 	console.log("a user connected");
-	socket.on('getCatalog',function(data){ sqlQueries.getCatalog(data,con,socket); });
-	socket.on('getMedia',function(data){ sqlQueries.getMedia(data,con,socket); });
-	socket.on('getInfo',function(data){ sqlQueries.getInfo(data,con,socket); });
-	socket.on('getUsers',function(data){ sqlQueries.getUsers(data,con,socket); });
-	socket.on('bookdonate', function(data){ sqlQueries.insertBook(data,con); });
-	socket.on('filmdonate', function(data){ sqlQueries.insertFilm(data,con); });
-	socket.on('signup', function(data){ sqlQueries.createUser(data,con,socket); });
-	socket.on('postReview', function(data){ sqlQueries.postReview(data,con,socket); });
+	socket.on('getCatalog',function(data){ 
+		pool.getConnection(function(err, con){
+			if(err)
+				con.release();
+			sqlQueries.getCatalog(data,con,socket);
+			con.release();
+		});
+	});
+		
+	socket.on('getMedia',function(data){ 
+		pool.getConnection(function(err, con){
+			if(err)
+				con.release();
+			sqlQueries.getMedia(data,con,socket);
+			con.release();
+		});
+	});
+
+	socket.on('getInfo',function(data){ 
+		pool.getConnection(function(err, con){
+			if(err)
+				con.release();
+			sqlQueries.getInfo(data,con,socket);
+			con.release();
+		});
+	});
+
+	socket.on('getUsers',function(data){ 
+		pool.getConnection(function(err, con){
+			if(err)
+				con.release();
+			sqlQueries.getUsers(data,con,socket);
+			con.release();
+		});
+	});
+	
+	socket.on('bookdonate',function(data){ 
+		pool.getConnection(function(err, con){
+			if(err)
+				con.release();
+			sqlQueries.insertBook(data,con); 
+			con.release();
+		});
+	});
+	
+	socket.on('filmdonate',function(data){ 
+		pool.getConnection(function(err, con){
+			if(err)
+				con.release();
+			sqlQueries.insertFilm(data,con);
+			con.release();
+		});
+	});
+	
+	socket.on('signup',function(data){ 
+		pool.getConnection(function(err, con){
+			if(err)
+				con.release();
+			sqlQueries.createUser(data,con,socket);
+			con.release();
+		});
+	});
+	
+	socket.on('postReview',function(data){ 
+		pool.getConnection(function(err, con){
+			if(err)
+				con.release();
+			sqlQueries.postReview(data,con,socket);
+			con.release();
+		});
+	});
 });
