@@ -113,10 +113,11 @@ module.exports = {
 		var mo = ('0'+(date.getMonth()+1)).slice(-2);
 		var day = ('0' + date.getDate()).slice(-2);
 		var today = yr+'-'+mo+'-'+day;
-		var post = "INSERT INTO Review(mediaID,userID,rating,description,upvotes,date) VALUES(?,?,?,?,0,?)";
+		console.log(today)
+		var post = "INSERT INTO Review(mediaID,userID,rating,description,date) VALUES(?,?,?,?,?)";
 		con.query(post,[data.mediaID,data.userID,data.rating,data.desc,today],function(err,res){
 			if(err){ socket.emit('reviewFailed'); }
-			socket.emit('reviewPosted');
+			else socket.emit('reviewPosted');
 		});
 	}
 };
