@@ -2,30 +2,29 @@
 
 <html>
 <head>
-	<title>Library Catalog</title>
+	<title>Library</title>
 	<link type="text/css" rel="stylesheet" href="/css/index.css">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-<h1>Library Catalog</h1>
+<h1>Library</h1>
 <ul id="nav">
+	<li><a href="/">Catalog</a></li>
 	<li><a href="/donate/book">Donate Book</a></li>
 	<li><a href="/donate/film">Donate Film</a></li>
 	<li><a href="/signup">Sign Up</a></li>
+	
 </ul>
 
+	<input id="catalogSearch" class="searchBox" placeholder="Search">
+
 <main>
-	<div id="mediaOverlay" class="hidden">
-		<div id="overlayCanvas">
-			<h2 id="mediaTitle"></h2>
-			<h3 id="mediaCreator"></h4>
-			<span id="mediaCopies"></span><br>
-			<span id="mediaType"></span><br>
-			<span id="avgRating"></span><br><hr><hr>
-			<div id="reviews"></div>
-		</div>
+	
+	<div id="listings">
 	</div>
+	
 	
 </main>
 
@@ -50,14 +49,16 @@
 			creator = $('<li/>').addClass('listingCreator').text(item[0].director);
 		}
 		var section = $('<li/>').addClass('listingSection').text(item[0].sectionName);
-		var type = $('<span/>').addClass('listingType').text(item[0].type);
+		var typeIcon = $('<i/>').addClass('material-icons listingType').html('book');
+		if(item[0].type=='film'){
+			typeIcon = $('<i/>').addClass('material-icons listingType').html('movies');
+		}
 		var info = $('<ul/>').addClass('listingText').append(title,creator,section);
-		var listingLink = $('<a/>').addClass('mediaLink').append(cover,info,type);
+		var listingLink = $('<span/>').addClass('mediaLink').append(cover,typeIcon,info);
 		var listing = $('<div/>').addClass('listing').append(listingLink);
-		$('main').append(listing);
+		$('#listings').append(listing);
 	});
 	$('main').bind("click","a", function(event){
-		if($('#mediaOverlay').hasClass('hidden')){
 			var container = $(event.target);
 			while(!container.is("div")){
 				container = container.parent();
@@ -66,41 +67,46 @@
 				var mediaTitle = container.find('.listingTitle').text();
 				var mediaCreator = container.find('.listingCreator').text();
 				var mediaType = container.find('.listingType').text();
+				if(mediaType=='movies') mediaType='film';
 				
 				//Might want to change this to go to another page instead?
 				var data = {title : mediaTitle, creator : mediaCreator, type : mediaType}
 				socket.emit('getInfo',data);
 			}
-		}
-	});
-	$('#mediaOverlay').bind("click", function(event){
-		if($(event.target).attr('id')=='mediaOverlay'){
-			$('#mediaOverlay').removeClass('overlay').addClass('hidden');
-			$('.coverImage').remove();
-			$('#reviews').empty();
-		}
 	});
 	socket.on('mediaInfo',function(data){
-		$('#mediaTitle').text(data.title);
-		$('<img/>').addClass('mediaImage').attr('src',data.imageURL).insertBefore( $('#mediaTitle') );
-		$('#mediaCreator').text(data.creator);
-		$('#mediaCopies').text("Copies: "+data.copies);
-		$('#mediaType').text("Type: "+data.type);
+		var backButton = $('<button/>').addClass('backButton').text('<');
+		backButton.click(function(){
+			$('.bigMedia').remove();
+			$('#listings').removeClass('hidden');
+			$('#catalogSearch').removeClass('hidden');
+		});
+		var mediaTitle = $('<h2/>').addClass('mediaTitle').text(data.title);
+		var mediaImg = $('<img>').addClass('mediaImg').addClass('mediaImage').attr('src',data.imageURL);
+		console.log(data);
+		var mediaCreator = $('<h3/>').addClass('mediaCreator').text(data.creator);
+		var mediaCopies = $('<p/>').addClass('mediaCopies').text("Copies: "+data.copies);
+		var mediaType = $('<p/>').addClass('mediaType').text("Type: "+data.type);
+		var reviews = $('<div/>').addClass('reviews');
+		var ratings = []
 		data.reviews.forEach(function(item){
 			var review = $('<div/>').addClass('reviewEntry');
 			var reviewer = $('<span/>').addClass('reviewer').text(item.userID);
 			var rating = $('<span/>').addClass('rating').text(item.rating);
+			ratings.push(item.rating);
 			var description = $('<p/>').addClass('description').text(item.description);
 			review.append(reviewer,rating,description);
-			$('#reviews').append(review,$('<hr>'));
+			reviews.append(review,$('<hr>'));
 		});
 		var total=0; var count=0;
-		$('.rating').each(function(){
-			total+=parseInt($(this).text());
+		ratings.forEach(function(val){
+			total+=parseInt(val);
 			count+=1;
 		});
-		$('#avgRating').text("Average Rating: "+(total/count).toFixed(1).toString());
-		$('#mediaOverlay').removeClass('hidden').addClass('overlay')
+		var bigMedia = $('<div/>').addClass('bigMedia').append(backButton,mediaImg,mediaTitle,mediaCreator,mediaCopies,mediaType,reviews);
+		$('#listings').addClass('hidden');
+		$('#catalogSearch').addClass('hidden');
+		$('main').append(bigMedia);
 	});
 </script>
 </body>

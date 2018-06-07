@@ -73,7 +73,7 @@ module.exports = {
 			if(res[0].author==null){ output['creator']=res[0].director; }
 			output['copies']=res[0].copies;
 			output['type']=res[0].type;
-			output['imageURL']=res[0].type;
+			output['imageURL']=res[0].imageURL;
 			var getReviews = "SELECT userID,rating,description From Review WHERE mediaID=?";
 			con.query(getReviews,[output.mediaID],function(err2, res2){
 				output['reviews']=res2;
