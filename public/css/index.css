@@ -1,9 +1,11 @@
+html{
+	background-color:rgb(255, 252, 243);
+}
 h1{
 	font-size:84px;
 }
 
 body{
-	background-color:white;
 	margin: 0 auto;
 	margin-top:5px;
 	padding:10px;
@@ -53,14 +55,13 @@ textarea{
 	color:rgb(70,70,70);
 }
 .searchBox{
-	border: 1px solid black;
 	height:40px;
-	width:100%;
+	width:80%;
 	border-radius: 30px;
-	background-color:white;
+	background-color: rgb(255, 252, 243);
 }
 .searchBox:focus{
-	background-color: rgb(230,230,230);
+	background-color: white;
 }
 .searchBox:focus::-webkit-input-placeholder { color:transparent; }
 .searchBox:focus:-moz-placeholder { color:transparent; } /* FF 4-18 */
@@ -83,6 +84,7 @@ textarea{
 	float:right;
 }
 .listing .listingImage{
+	border: 1px solid black;
 	max-height:150px;
 	float:left;
 }
@@ -115,18 +117,45 @@ textarea{
 
 }
 .reviewer{
-	font-size:30px;
+	font-size:24px;
 	margin: 5px;
 }
 .rating{
-	font-size:30px;
+	font-size:24px;
 	margin: 5px;
 	margin-left: 20px;
 }
+.reviews .description{
+	font-size:18px;
+}
+.bigMedia{
+	text-align:left;
+}
 .backButton{
+	position:-webkit-sticky;
+	position:sticky;
+	top:2.5vh;
+	float:left;
+	background-color:rgba(0,0,0,0);
 	font-size:60px;
-	background-color:white;
 	border:0;
-	float:left;	
-	padding:50px;
+	padding:2.5vw;
+	height:100%;
+}
+.mediaImg{
+	float:left;
+	margin: 0 15px;
+}
+.mediaCopies, .mediaType{
+	float:right;
+	clear:right;
+}
+.reviewSection{
+	clear:left;
+	margin:50px 10vw;	
+	padding:3px 0;
+}
+.writeReview{
+	float:left;
+	margin-right:7vw;
 }

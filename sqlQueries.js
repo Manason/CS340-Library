@@ -63,14 +63,15 @@ module.exports = {
 	getInfo : function(data,con,socket){
 		var output = {}
 		var getMediaInfo = "";
-		if(data.type=="book"){ getMediaInfo = "SELECT M.mediaID,M.title,M.type,B.author,M.imageURL,COUNT(*) AS copies FROM Media M, Book B WHERE M.mediaID=B.mediaID AND M.title=? AND B.author=? GROUP BY M.mediaID"; }
-		if(data.type=="film"){ getMediaInfo = "SELECT M.mediaID,M.title,M.type,F.director,M.imageURL,COUNT(*) AS copies FROM Media M, Film F WHERE M.mediaID=F.mediaID AND M.title=? AND F.director=? GROUP BY M.mediaID"; }
+		if(data.type=="book"){ getMediaInfo = "SELECT M.mediaID,M.title,M.type,B.author,M.description,M.imageURL,COUNT(*) AS copies FROM Media M, Book B WHERE M.mediaID=B.mediaID AND M.title=? AND B.author=? GROUP BY M.mediaID"; }
+		if(data.type=="film"){ getMediaInfo = "SELECT M.mediaID,M.title,M.type,F.director,M.description,M.imageURL,COUNT(*) AS copies FROM Media M, Film F WHERE M.mediaID=F.mediaID AND M.title=? AND F.director=? GROUP BY M.mediaID"; }
 		con.query(getMediaInfo,[data.title,data.creator],function(err,res){
 			if(err) throw err;
 			output['mediaID']=res[0].mediaID;
 			output['title']=res[0].title;
 			output['creator']=res[0].author;
 			if(res[0].author==null){ output['creator']=res[0].director; }
+			output['description']=res[0].description;
 			output['copies']=res[0].copies;
 			output['type']=res[0].type;
 			output['imageURL']=res[0].imageURL;
