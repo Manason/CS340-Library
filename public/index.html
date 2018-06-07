@@ -31,6 +31,7 @@
 
 <script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
 <script>
+	
 	var socket = io();
 	socket.emit('getCatalog');
 	socket.on('catalog',function(data){
@@ -86,6 +87,31 @@
 		var mediaCreator = $('<h3/>').addClass('mediaCreator').text(data.creator);
 		var mediaCopies = $('<p/>').addClass('mediaCopies').text("Copies: "+data.copies);
 		var mediaType = $('<p/>').addClass('mediaType').text("Type: "+data.type);
+		
+		var addReview = $('<h4/>').addClass('').text("Post Review");
+		var userChooser = $('<select/><br>').addClass('userChooser');
+		socket.emit('getUsers');
+		socket.on('users',function(data){
+			data.forEach(function(item){
+				userChooser.append( new Option(item.userID,item.userID));
+			});
+		});
+		var slider = $('<input type="range" min="1" max="5" value="3" class="slider" id="rating"><span id="ratingNum">3</span><br>').bind("change", function(){
+				console.log('dasdsa')
+				$('#ratingNum').text($('#rating').val());
+			});;
+			
+		var mID = data.mediaID;
+		var newDesc = $('<textarea type="text" id="newDescription" name="newDescription" class="descInput"></textarea><br>');
+		var submit = $('<input id="submit" type="submit" value="Submit">').click(function(){
+				$('span').remove('.alert');
+				$('br').remove('.alert');
+				var data = {mediaID : mID, userID : userChooser.val(), rating: $('#rating').val(), desc: $('#newDescription').val()}
+				console.log(data);
+				socket.emit('postReview',data);
+			});
+	
+		
 		var reviews = $('<div/>').addClass('reviews');
 		var ratings = []
 		data.reviews.forEach(function(item){
@@ -102,11 +128,21 @@
 			total+=parseInt(val);
 			count+=1;
 		});
-		var bigMedia = $('<div/>').addClass('bigMedia').append(backButton,mediaImg,mediaTitle,mediaCreator,mediaCopies,mediaType,reviews);
+		
+		var bigMedia = $('<div/>').addClass('bigMedia').append(backButton,mediaImg,mediaTitle,mediaCreator,mediaCopies,mediaType,addReview,userChooser,slider,newDesc,submit,reviews);
 		$('#listings').addClass('hidden');
 		$('#catalogSearch').addClass('hidden');
 		$('main').append(bigMedia);
 	});
+	socket.on('reviewFailed',function(){
+		$('<span/>').addClass('alert').text("Review Failed to Post!").insertBefore('#submit');
+		$('<br>').addClass('alert').insertBefore('#submit');
+	});
+	socket.on('reviewPosted',function(){
+		$('<span/>').addClass('alert success').text("Review Added successfully!").insertBefore('#submit');
+		$('<br>').addClass('alert').insertBefore('#submit');
+	});
+	
 </script>
 </body>
 </html>
