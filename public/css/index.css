@@ -107,15 +107,12 @@ textarea{
 #ratingNum{
 	padding:10px;
 }
-#mediaOverlay{
-	top:0;
-	left:0;
-}
 .hidden{
 	display:none !important;
 }
 .overlay{
 	display:block;
+
 }
 .reviewer{
 	font-size:30px;
