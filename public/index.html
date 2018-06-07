@@ -31,7 +31,11 @@
 
 <script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
 <script>
+
 	
+
+	var allMedia = [];
+
 	var socket = io();
 	socket.emit('getCatalog');
 	socket.on('catalog',function(data){
@@ -55,8 +59,9 @@
 			typeIcon = $('<i/>').addClass('material-icons listingType').html('movies');
 		}
 		var info = $('<ul/>').addClass('listingText').append(title,creator,section);
-		var listingLink = $('<span/>').addClass('mediaLink').append(cover,typeIcon,info);
-		var listing = $('<div/>').addClass('listing').append(listingLink);
+		var listingLink = $('<span/>').addClass('mediaLink').append();
+		var listing = $('<div/>').addClass('listing').append(cover,info,typeIcon);
+		allMedia.push(listing);
 		$('#listings').append(listing);
 	});
 	$('main').bind("click","a", function(event){
@@ -134,6 +139,7 @@
 		$('#catalogSearch').addClass('hidden');
 		$('main').append(bigMedia);
 	});
+
 	socket.on('reviewFailed',function(){
 		$('<span/>').addClass('alert').text("Review Failed to Post!").insertBefore('#submit');
 		$('<br>').addClass('alert').insertBefore('#submit');
@@ -141,6 +147,22 @@
 	socket.on('reviewPosted',function(){
 		$('<span/>').addClass('alert success').text("Review Added successfully!").insertBefore('#submit');
 		$('<br>').addClass('alert').insertBefore('#submit');
+
+	
+	document.querySelector("#catalogSearch").addEventListener("input",function () {
+		allMedia.forEach(function(listing){
+			var str = listing.find('.listingTitle').text();
+			str += " " + listing.find('.listingCreator').text();
+			str += " " + listing.find('.listingSection').text();
+			console.log(str);
+			
+			if(!str.toLowerCase().includes($('#catalogSearch').val().toLowerCase())){
+				listing.addClass('hidden');
+			} else {
+				listing.removeClass('hidden');
+			}
+		});
+
 	});
 	
 </script>
