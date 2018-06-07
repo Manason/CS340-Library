@@ -73,7 +73,7 @@ textarea{
 	flex: 1 0 25%;
 	margin: 10px 20px;
 	overflow:auto;
-	min-width:300px;
+	min-width:500px;
 	text-align:left;
 }
 .listing span{
@@ -91,9 +91,9 @@ textarea{
 }
 .listing .listingText{
 	list-style-type:none;
+	float:left;
 }
 .listing .listingText li{
-	margin-left: 80px;
 }
 .alert{
 	color:red;
