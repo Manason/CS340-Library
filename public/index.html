@@ -97,14 +97,15 @@
 			ratings.push(item.rating);
 			var description = $('<p/>').addClass('description').text(item.description);
 			review.append(reviewer,rating,description);
-			reviews.append(review,$('<hr>'));
+			reviews.append(review);
 		});
 		var total=0; var count=0;
 		ratings.forEach(function(val){
 			total+=parseInt(val);
 			count+=1;
 		});
-		var bigMedia = $('<div/>').addClass('bigMedia').append(backButton,mediaImg,mediaTitle,mediaCreator,mediaCopies,mediaType,reviews);
+		var avgRating = $('<p/>').addClass('avgRating').text('Average Rating: 	'+(total/count).toFixed(1).toString())
+		var bigMedia = $('<div/>').addClass('bigMedia').append(backButton,mediaImg,mediaTitle,mediaCreator,mediaCopies,mediaType,avgRating,reviews);
 		$('#listings').addClass('hidden');
 		$('#catalogSearch').addClass('hidden');
 		$('main').append(bigMedia);

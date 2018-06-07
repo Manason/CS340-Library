@@ -1,9 +1,11 @@
+html{
+	background-color:rgb(255, 252, 243);
+}
 h1{
 	font-size:84px;
 }
 
 body{
-	background-color:white;
 	margin: 0 auto;
 	margin-top:5px;
 	padding:10px;
@@ -53,14 +55,13 @@ textarea{
 	color:rgb(70,70,70);
 }
 .searchBox{
-	border: 1px solid black;
 	height:40px;
-	width:100%;
+	width:80%;
 	border-radius: 30px;
-	background-color:white;
+	background-color: rgb(255, 252, 243);
 }
 .searchBox:focus{
-	background-color: rgb(230,230,230);
+	background-color: white;
 }
 .searchBox:focus::-webkit-input-placeholder { color:transparent; }
 .searchBox:focus:-moz-placeholder { color:transparent; } /* FF 4-18 */
@@ -83,6 +84,7 @@ textarea{
 	float:right;
 }
 .listing .listingImage{
+	border: 1px solid black;
 	max-height:150px;
 	float:left;
 }
