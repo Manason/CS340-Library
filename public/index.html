@@ -91,6 +91,44 @@
 		var mediaType = $('<i/>').addClass('material-icons mediaType').html('book');
 		if(data.type='film') $('<i/>').addClass('material-icons listingType').html('movies');
 		
+		backButton.click(function(){
+			$('.bigMedia').remove();
+			$('#listings').removeClass('hidden');
+			$('#catalogSearch').removeClass('hidden');
+		});
+		backButton.click(function(){
+			$('.bigMedia').remove();
+			$('#listings').removeClass('hidden');
+			$('#catalogSearch').removeClass('hidden');
+		});
+		backButton.click(function(){
+			$('.bigMedia').remove();
+			$('#listings').removeClass('hidden');
+			$('#catalogSearch').removeClass('hidden');
+		});
+		
+		var checkoutButton = $('<button/>').addClass('checkoutButton');
+		if(data.copies > 0){
+			checkoutButton.text('Checkout   >');
+			checkoutButton.click(function(){
+				//if logged in
+					//send query to server to assign this userID to mediaID (first bookID/filmID with this mID).
+					
+				//else
+					alert('Must be logged in to perform this task!');
+			});
+		}
+		else checkoutButton.text('No Copies available.');
+		checkoutButton.hover(
+			function(){
+				checkoutButton.data('initialText', checkoutButton.text());
+				checkoutButton.text("Must be Logged in");
+			},
+			function(){
+				checkoutButton.text(checkoutButton.data('initialText'));
+			}
+		);
+		
 		//-------REVIEWS-------------------
 		var reviewSection = $('<div/>').addClass('reviewSection');
 		//-------WRITE A REVIEW------------
@@ -144,7 +182,7 @@
 		
 		//-------WRITE TO DOM--------------
 		var reviewSection = $('<div/>').addClass('reviewSection').append(writeReview,reviews);
-		var bigMedia = $('<div/>').addClass('bigMedia').append(backButton,mediaImg,mediaType,mediaCopies,mediaTitle,mediaCreator,mediaDesc,avgRating,reviewSection);
+		var bigMedia = $('<div/>').addClass('bigMedia').append(backButton,mediaImg,mediaType,mediaCopies,checkoutButton,mediaTitle,mediaCreator,mediaDesc,avgRating,reviewSection);
 
 		$('#listings').addClass('hidden');
 		$('#catalogSearch').addClass('hidden');
