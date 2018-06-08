@@ -146,9 +146,19 @@ textarea{
 	float:left;
 	margin: 0 15px;
 }
-.mediaCopies, .mediaType{
+.mediaDesc{
+	width: 90%;
+}
+.mediaCopies, .mediaType, .checkoutButton{
 	float:right;
 	clear:right;
+}
+.checkoutButton{
+	background-color: rgba(240,240,240);
+	padding: 10px;
+	border-radius: 5px;
+	border: 0;
+	width: 100px;
 }
 .reviewSection{
 	clear:left;
