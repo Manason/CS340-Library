@@ -1,4 +1,22 @@
 module.exports = {
+	getCurrentUsername : function(data,con,socket){
+		socket.emit('username',socket.handshake.session.userID)
+	},
+	checkoutMedia : function(data,con,socket){
+		var checkBookAvailable = "";
+		if(data.type=="book") checkBookAvailable = "SELECT MIN(bookID) as 'check' FROM Book WHERE mediaID=? AND userID IS NULL";
+		if(data.type=="film") checkBookAvailable = "SELECT MIN(filmID) as 'check' FROM Film WHERE mediaID=? AND userID IS NULL";
+		con.query(checkBookAvailable,[data.mediaID],function(err,res){
+			if(err) console.log(err);
+			var checkoutBook = "";
+			if(data.type=="book") checkoutBook = "UPDATE Book SET userID=? WHERE bookID=?";
+			if(data.type=="film") checkoutBook = "UPDATE Film SET userID=? WHERE filmID=?";
+			con.query(checkoutBook,[data.user,res[0].check],function(err2, res2){
+				if(err2) console.log("checkout failed");
+				else socket.emit('checkoutSuccess')
+			});
+		});
+	},
 	insertBook : function(data,con){
 		var check = "SELECT COUNT(*) AS entries FROM Media M, Book B WHERE M.mediaID=B.mediaID AND M.title=? AND B.author=?";
 		con.query(check,[data.title,data.author],function(err,res){
@@ -63,8 +81,8 @@ module.exports = {
 	getInfo : function(data,con,socket){
 		var output = {}
 		var getMediaInfo = "";
-		if(data.type=="book"){ getMediaInfo = "SELECT M.mediaID,M.title,M.type,B.author,M.description,M.imageURL,COUNT(*) AS copies FROM Media M, Book B WHERE M.mediaID=B.mediaID AND M.title=? AND B.author=? GROUP BY M.mediaID"; }
-		if(data.type=="film"){ getMediaInfo = "SELECT M.mediaID,M.title,M.type,F.director,M.description,M.imageURL,COUNT(*) AS copies FROM Media M, Film F WHERE M.mediaID=F.mediaID AND M.title=? AND F.director=? GROUP BY M.mediaID"; }
+		if(data.type=="book"){ getMediaInfo = "SELECT M.mediaID,M.title,M.type,B.author,M.description,M.imageURL FROM Media M, Book B WHERE M.mediaID=B.mediaID AND M.title=? AND B.author=? GROUP BY M.mediaID"; }
+		if(data.type=="film"){ getMediaInfo = "SELECT M.mediaID,M.title,M.type,F.director,M.description,M.imageURL FROM Media M, Film F WHERE M.mediaID=F.mediaID AND M.title=? AND F.director=? GROUP BY M.mediaID"; }
 		con.query(getMediaInfo,[data.title,data.creator],function(err,res){
 			if(err) throw err;
 			output['mediaID']=res[0].mediaID;
@@ -72,9 +90,15 @@ module.exports = {
 			output['creator']=res[0].author;
 			if(res[0].author==null){ output['creator']=res[0].director; }
 			output['description']=res[0].description;
-			output['copies']=res[0].copies;
 			output['type']=res[0].type;
 			output['imageURL']=res[0].imageURL;
+			var getAvailCopies = "";
+			if(data.type=='book') getAvailCopies = "SELECT COUNT(*) AS copies FROM Book WHERE mediaID=? AND userID IS NULL";
+			if(data.type=='film') getAvailCopies = "SELECT COUNT(*) AS copies FROM Film WHERE mediaID=? AND userID IS NULL";
+			con.query(getAvailCopies,[output.mediaID],function(err3,res3){
+				if(err) console.log('copies err');
+				output['copies']=res3[0].copies;
+			});
 			var getReviews = "SELECT userID,rating,description From Review WHERE mediaID=?";
 			con.query(getReviews,[output.mediaID],function(err2, res2){
 				output['reviews']=res2;
@@ -96,6 +120,10 @@ module.exports = {
 				con.query(ins,[data.userID,data.password],function(err2,res2){
 					if(err) console.log("Unable to create user "+data.userID);
 					console.log("Created User "+data.userID);
+					socket.handshake.session.userID = data.userID;
+					socket.handshake.session.save();
+					console.log("Logged in as " + socket.handshake.session.userID);
+					socket.emit('loginSuccess');
 				});
 			} else {
 				socket.emit('dupUserID');
@@ -110,8 +138,8 @@ module.exports = {
 			else{
 				socket.handshake.session.userID = data.userID;
 				socket.handshake.session.save();
-				console.log(socket.handshake.session.userID);
-				console.log("logged in");
+				console.log("logged in as " + socket.handshake.session.userID);
+				socket.emit('loginSuccess');
 			}
 		});
 	},

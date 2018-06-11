@@ -129,7 +129,23 @@ io.on('connection', function(socket){
 	console.log("a user connected");
 	
 	console.log(socket.handshake.session.userID);
-
+	
+	socket.on('getCurUser', function(data){
+		pool.getConnection(function (err, con){
+			if(err)
+				con.release();
+			sqlQueries.getCurrentUsername(data, con, socket);
+			con.release();
+		});
+	});
+	socket.on('checkout', function(data){
+		pool.getConnection(function (err, con){
+			if(err)
+				con.release();
+			sqlQueries.checkoutMedia(data, con, socket);
+			con.release();
+		});
+	});
 	socket.on('loginAttempt', function(data){
 		pool.getConnection(function (err, con){
 			if(err)

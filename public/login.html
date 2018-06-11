@@ -32,6 +32,13 @@
 
 <script>
 	var socket = io();
+	socket.emit('getCurUser');
+	socket.on('username',function(user){
+		//Replace '#' in attr 'src' to own userpage
+		var userLink = $('<a/>').addClass('userLink').text(user);
+		$('body').prepend(userLink)
+		loggedUser=user;
+	});
 	$('#submit').click(function(){
 		$('span').remove('.alert');
 		$('br').remove('.alert');
@@ -42,12 +49,17 @@
 		socket.emit('loginAttempt', data);
 	});
 	
+	socket.on('loginSuccess',function(){
+		alert('Logged in!')
+		window.location.href = '/';
+	});
+	
 	//make sure to create a socket emit when username or password is wrong -> will trigger failure text
 	socket.on('badPassword',function(){
 		console.log("Wrong Username Or Password");
 		var usernameAlert = $('<span/>').addClass('alert').text("Username or Password is Incorrect");
 		usernameAlert.insertBefore('#username');
-		$('<br>').addClass('alert').insertBefore('#newUser');
+		$('<br>').addClass('alert').insertBefore('#username');
 	});
 	function hashCode(str){
 		var hash = 0;

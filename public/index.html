@@ -32,8 +32,19 @@
 
 <script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
 <script>
+
 	var allMedia = [];
 	var socket = io();
+	var loggedUser = null;
+	
+	socket.emit('getCurUser');
+	socket.on('username',function(user){
+		//Replace '#' in attr 'src' to own userpage
+		var userLink = $('<a/>').addClass('userLink').text(user);
+		$('body').prepend(userLink)
+		loggedUser=user;
+	});
+	
 	socket.emit('getCatalog');
 	socket.on('catalog',function(data){
 		data.forEach(function(item){
@@ -90,7 +101,7 @@
 		var mediaDesc = $('<p/>').addClass('mediaDesc').text(data.description);
 		var mediaCopies = $('<p/>').addClass('mediaCopies').text("Copies: "+data.copies);
 		var mediaType = $('<i/>').addClass('material-icons mediaType').html('book');
-		if(data.type='film') $('<i/>').addClass('material-icons listingType').html('movies');
+		if(data.type=='film') mediaType = $('<i/>').addClass('material-icons listingType').html('movies');
 		
 		backButton.click(function(){
 			$('.bigMedia').remove();
@@ -112,18 +123,20 @@
 		if(data.copies > 0){
 			checkoutButton.text('Checkout   >');
 			checkoutButton.click(function(){
-				//if logged in
-					//send query to server to assign this userID to mediaID (first bookID/filmID with this mID).
-					
-				//else
+				if(loggedUser){
+					console.log("logged in as "+loggedUser);
+					socket.emit('checkout',{user: loggedUser, mediaID: data.mediaID, type: data.type});
+				}
+				else{
 					alert('Must be logged in to perform this task!');
+				}
 			});
 		}
 		else checkoutButton.text('No Copies available.');
 		checkoutButton.hover(
 			function(){
 				checkoutButton.data('initialText', checkoutButton.text());
-				checkoutButton.text("Must be Logged in");
+				if(!loggedUser) checkoutButton.text("Must be Logged in");
 			},
 			function(){
 				checkoutButton.text(checkoutButton.data('initialText'));
@@ -188,6 +201,10 @@
 		$('#listings').addClass('hidden');
 		$('#catalogSearch').addClass('hidden');
 		$('main').append(bigMedia);
+	});
+	
+	socket.on('checkoutSuccess', function(){
+		alert('Checked out this media!');
 	});
 	
 	document.querySelector("#catalogSearch").addEventListener("input",function () {

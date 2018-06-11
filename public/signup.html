@@ -32,6 +32,13 @@
 
 <script>
 	var socket = io();
+	socket.emit('getCurUser');
+	socket.on('username',function(user){
+		//Replace '#' in attr 'src' to own userpage
+		var userLink = $('<a/>').addClass('userLink').text(user);
+		$('body').prepend(userLink)
+		loggedUser=user;
+	});
 	$('#submit').click(function(){
 		$('span').remove('.alert');
 		$('br').remove('.alert');
@@ -44,6 +51,10 @@
 		var usernameAlert = $('<span/>').addClass('alert').text("Username '"+$('#newUser').val()+"' not available");
 		usernameAlert.insertBefore('#newUser');
 		$('<br>').addClass('alert').insertBefore('#newUser');
+	});
+	socket.on('loginSuccess',function(){
+		alert('Account created and logged in!')
+		window.location.href = '/';
 	});
 	function hashCode(str){
 		var hash = 0;

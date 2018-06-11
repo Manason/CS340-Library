@@ -43,6 +43,13 @@
 		var data = {title : $('#newTitle').val(), author : $('#newAuthor').val(), desc : $('#newDescription').val(), pages : $('#newNumPages').val(), section : $('#newSection').val()};
 		socket.emit('bookdonate', data); 
 	});
+	socket.emit('getCurUser');
+	socket.on('username',function(user){
+		//Replace '#' in attr 'src' to own userpage
+		var userLink = $('<a/>').addClass('userLink').text(user);
+		$('body').prepend(userLink)
+		loggedUser=user;
+	});
 </script>
 </html>
 

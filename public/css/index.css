@@ -169,3 +169,7 @@ textarea{
 	float:left;
 	margin-right:7vw;
 }
+.userLink{
+	float:right;
+	font-size:20px;
+}
