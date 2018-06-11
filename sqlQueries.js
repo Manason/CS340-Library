@@ -102,6 +102,15 @@ module.exports = {
 			}
 		});
 	},
+	checkLogin : function(data, con, socket){
+		var checkLogin = "SELECT DISTINCT userID FROM User WHERE userID=? AND password=?";
+		con.query(checkLogin, [data.userID, data.password],function(err, res){
+			if(!res.length)
+				socket.emit('badPassword');
+			else
+				console.log("logged in");
+		});
+	},
 	getUsers : function(data,con,socket){
 		var getCatalog = "SELECT DISTINCT userID FROM User";
 		con.query(getCatalog,function(err,res){

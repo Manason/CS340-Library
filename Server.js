@@ -47,6 +47,14 @@ app.use(express.static('public')); //serves index.html
 io.on('connection', function(socket){
 	
 	console.log("a user connected");
+	socket.on('loginAttempt', function(data){
+		pool.getConnection(function (err, con){
+			if(err)
+				con.release();
+			sqlQueries.checkLogin(data, con, socket);
+			con.release();
+		});
+	});
 	socket.on('getCatalog',function(data){ 
 		pool.getConnection(function(err, con){
 			if(err)

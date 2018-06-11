@@ -39,7 +39,7 @@
 		var data = {userID : $('#username').val(), password : hashed};
 		
 		console.log(data);
-		//DO LOGIN STUFF HERE (socket?)
+		socket.emit('loginAttempt', data);
 	});
 	
 	//make sure to create a socket emit when username or password is wrong -> will trigger failure text
