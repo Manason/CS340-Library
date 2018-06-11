@@ -160,5 +160,31 @@ module.exports = {
 			if(err){ socket.emit('reviewFailed'); }
 			else socket.emit('reviewPosted');
 		});
+	},
+	getCheckedMedia : function(data,con,socket){
+		var checkedMedia = [];
+		var bookQ = "SELECT M.mediaID, B.bookID, M.title, B.author, M.imageURL, M.type FROM Media M, Book B WHERE M.mediaID=B.mediaID AND B.userID=?";
+		var filmQ = "SELECT M.mediaID, F.filmID, M.title, F.director, M.imageURL, M.type FROM Media M, Film F WHERE M.mediaID=F.mediaID AND F.userID=?";
+		con.query(bookQ,[data],function(err,res){
+			res.forEach(function(book){
+				checkedMedia.push(book);
+			});
+			con.query(filmQ,[data],function(err2,res2){
+				res2.forEach(function(film){
+					checkedMedia.push(film);
+				});
+				socket.emit('checkedMedia',checkedMedia);
+			});
+		});
+	},
+	returnMedia : function(data,con,socket){
+		var checkin = "";
+		if(data.type=="book") checkin = "UPDATE Book SET userID=NULL WHERE bookID=?";
+		if(data.type=="film") checkin = "UPDATE Film SET userID=NULL WHERE filmID=?";
+		con.query(checkin,[data.ID],function(err,res){
+			if(err) console.log("return error");
+			else socket.emit('refresh');
+		});
 	}
+
 };

@@ -1,0 +1,66 @@
+<!DOCTYPE html> 
+<html>
+<head>
+	<title>Donate a book</title>
+	<link type="text/css" rel="stylesheet" href="/css/index.css">
+	<script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+<h1>Library</h1>
+<ul id="nav">
+	<li><a href="/">Catalog</a></li>
+	<li><a href="/donate/book">Donate Book</a></li>
+	<li><a href="/donate/film">Donate Film</a></li>
+	<li><a href="/signup">Sign Up</a></li>
+	<li><a href="/login">Log In</a></li>
+	
+</ul>
+<main>
+	<h2>My Profile</h2>
+</main>
+</body>
+
+<script>
+	var socket = io();
+	var loggedUser = "";
+	
+	socket.emit('getCurUser');
+	socket.on('username',function(user){
+		//Replace '#' in attr 'src' to own userpage
+		var userLink = $('<a/>').addClass('userLink').attr('href','/profile').text(user);
+		$('body').prepend(userLink)
+		loggedUser=user;
+		
+		socket.emit('getCheckedMedia', loggedUser);
+	});
+	
+	socket.on('checkedMedia', function(data){
+		data.forEach(function(entry){
+			var cover = $('<img>').addClass('listingImage').attr('src',entry.imageURL);
+			var title = $('<li/>').addClass('listingTitle').text(entry.title);
+			var creator;
+			if(entry.author!=null){
+				creator = $('<li/>').addClass('listingCreator').text(entry.author);
+			} else if(entry.director!=null){
+				creator = $('<li/>').addClass('listingCreator').text(entry.director);
+			}
+			var returnButton = $('<button/>').addClass('checkoutButton').text('Return');
+			returnButton.click(function(){
+				var payload = {userID: loggedUser, ID: entry.bookID, type: entry.type}
+				if(payload.ID==null) payload.ID=entry.filmID;
+				socket.emit('returnMedia',payload);
+			});
+			var info = $('<ul/>').addClass('listingText').append(title,creator);
+			var listing = $('<div/>').addClass('listing').append(cover,info,returnButton);
+			$('main').append(listing);
+		});
+	});
+	
+	socket.on('refresh',function(){
+		window.location.reload();
+	});
+</script>
+</html>
+
