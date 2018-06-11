@@ -147,13 +147,6 @@
 		var reviewSection = $('<div/>').addClass('reviewSection');
 		//-------WRITE A REVIEW------------
 		var addReview = $('<h4/>').addClass('reviewHeader').text("Post Review");
-		var userChooser = $('<select/><br>').addClass('userChooser');
-		socket.emit('getUsers');
-		socket.on('users',function(data){
-			data.forEach(function(item){
-				userChooser.append( new Option(item.userID,item.userID));
-			});
-		});
 		var slider = $('<input type="range" min="1" max="5" value="3" class="slider" id="rating"><span id="ratingNum">3</span><br>').bind("change", function(){
 				console.log('dasdsa')
 				$('#ratingNum').text($('#rating').val());
@@ -164,11 +157,11 @@
 		var submit = $('<input id="submit" type="submit" value="Submit">').click(function(){
 				$('span').remove('.alert');
 				$('br').remove('.alert');
-				var data = {mediaID : mID, userID : userChooser.val(), rating: $('#rating').val(), desc: $('#newDescription').val()}
+				var data = {mediaID : mID, userID : loggedUser, rating: $('#rating').val(), desc: $('#newDescription').val()}
 				console.log(data);
 				socket.emit('postReview',data);
 			});
-		var writeReview = $('<div/>').addClass('writeReview').append(addReview,userChooser,slider,newDesc,submit);
+		var writeReview = $('<div/>').addClass('writeReview').append(addReview,slider,newDesc,submit);
 		
 		//-------SEE OTHER REVIEWS---------
 		var reviews = $('<div/>').addClass('reviews').append( $('<h4/>').addClass('pastReviews').text('Other Reviews') );
@@ -195,7 +188,9 @@
 		var avgRating = $('<p/>').addClass('avgRating').text('Average Rating: 	'+(total/count).toFixed(1).toString())
 		
 		//-------WRITE TO DOM--------------
-		var reviewSection = $('<div/>').addClass('reviewSection').append(writeReview,reviews);
+		var reviewSection = $('<div/>').addClass('reviewSection');
+		if(loggedUser) reviewSection.append(writeReview,reviews);
+		else reviewSection.append(reviews)
 		var bigMedia = $('<div/>').addClass('bigMedia').append(backButton,mediaImg,mediaType,mediaCopies,checkoutButton,mediaTitle,mediaCreator,mediaDesc,avgRating,reviewSection);
 
 		$('#listings').addClass('hidden');

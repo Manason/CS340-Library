@@ -185,6 +185,22 @@ module.exports = {
 			if(err) console.log("return error");
 			else socket.emit('refresh');
 		});
+	},
+	getFavoriteMedia : function(data,con,socket){
+		var q = "SELECT favoriteBook, favoriteFilm FROM User WHERE userID=?"
+		con.query(q,[data],function(err,res){
+			if(err) console.log("error getting favorites");
+			socket.emit('favMedia',res);
+		});
+	},
+	updateFav : function(data,con,socket){
+		var query = "";
+		if(data.type=="book") query="UPDATE User SET favoriteBook=? WHERE userID=?";
+		if(data.type=="film") query="UPDATE User SET favoriteFilm=? WHERE userID=?";
+		con.query(query,[data.value, data.userID],function(err,res){
+			if(err) console.log(query,data.value, data.userID);
+			socket.emit('updateSuccess',res);
+		});
 	}
 
 };

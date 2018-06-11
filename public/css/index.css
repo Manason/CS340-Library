@@ -173,3 +173,16 @@ textarea{
 	float:right;
 	font-size:20px;
 }
+.fav{
+	background-color:rgba(0,0,0,0);
+	border:none;
+	font-size:24px;
+	text-align:left;
+}
+.fav:focus{
+	background-color:rgb(230,230,230);
+	border: 1px solid grey;
+}
+.updateButton{
+	width:auto;
+}

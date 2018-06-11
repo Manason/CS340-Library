@@ -19,6 +19,13 @@
 </ul>
 <main>
 	<h2>My Profile</h2>
+	
+	<h5>Favorite Book:</h5>
+	<input type="text" id="favBook" name="favBook" class="fav" value="Not set">
+	<input id="updateBook" type="submit" value="Update Book" class="updateButton">
+	<h5>Favorite Film:</h5>
+	<input type="text" id="favFilm" name="favFilm" class="fav" value="Not set">
+	<input id="updateFilm" type="submit" value="Update Film" class="updateButton">
 </main>
 </body>
 
@@ -30,10 +37,25 @@
 	socket.on('username',function(user){
 		//Replace '#' in attr 'src' to own userpage
 		var userLink = $('<a/>').addClass('userLink').attr('href','/profile').text(user);
-		$('body').prepend(userLink)
+		$('body').prepend(userLink);
 		loggedUser=user;
 		
 		socket.emit('getCheckedMedia', loggedUser);
+		socket.emit('getFavoriteMedia', loggedUser);
+	});
+	
+	socket.on('favMedia', function(data){
+		if(data[0].favoriteBook!=null) $('#favBook').val(data[0].favoriteBook);
+		if(data[0].favoriteFilm!=null) $('#favFilm').val(data[0].favoriteFilm);
+	});
+	$('#updateBook').click(function(){
+		socket.emit('updateFav', {type:'book', value: $('#favBook').val(), userID: loggedUser })
+	});
+	$('#updateFilm').click(function(){
+		socket.emit('updateFav', {type:'film', value: $('#favFilm').val(), userID: loggedUser })
+	});
+	socket.on('updateSuccess', function(data){
+		alert('Favorites Updated')
 	});
 	
 	socket.on('checkedMedia', function(data){
