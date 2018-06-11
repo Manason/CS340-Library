@@ -36,8 +36,8 @@ app.get('/donate/film', function(req, res){
 app.get('/signup', function(req, res){
 	res.sendFile(__dirname + '/public/signup.html');
 });
-app.get('/postreview', function(req, res){
-	res.sendFile(__dirname + '/public/postReview.html');
+app.get('/login', function(req, res){
+	res.sendFile(__dirname + '/public/login.html');
 });
 app.use(express.static('public')); //serves index.html
 
