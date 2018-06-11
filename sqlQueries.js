@@ -107,8 +107,12 @@ module.exports = {
 		con.query(checkLogin, [data.userID, data.password],function(err, res){
 			if(!res.length)
 				socket.emit('badPassword');
-			else
+			else{
+				socket.handshake.session.userID = data.userID;
+				socket.handshake.session.save();
+				console.log(socket.handshake.session.userID);
 				console.log("logged in");
+			}
 		});
 	},
 	getUsers : function(data,con,socket){
