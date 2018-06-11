@@ -70,6 +70,22 @@ io.on('connection', function(socket){
 			con.release();
 		});
 	});
+	socket.on('getFavoriteMedia', function(data){
+		pool.getConnection(function (err, con){
+			if(err)
+				con.release();
+			sqlQueries.getFavoriteMedia(data, con, socket);
+			con.release();
+		});
+	});
+	socket.on('updateFav', function(data){
+		pool.getConnection(function (err, con){
+			if(err)
+				con.release();
+			sqlQueries.updateFav(data, con, socket);
+			con.release();
+		});
+	});
 	socket.on('checkout', function(data){
 		pool.getConnection(function (err, con){
 			if(err)
