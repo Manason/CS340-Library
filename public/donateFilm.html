@@ -46,7 +46,7 @@
 	socket.emit('getCurUser');
 	socket.on('username',function(user){
 		//Replace '#' in attr 'src' to own userpage
-		var userLink = $('<a/>').addClass('userLink').attr('href','/profile').text(user);
+		var userLink = $('<a/>').addClass('userLink').attr('href','/profile/'+user).text(user);
 		$('body').prepend(userLink)
 	});
 </script>

@@ -20,12 +20,12 @@
         <main>
             <h2><%= profileID %>'s Profile</h2>
             
-            <h5><%= profileID %>'s Favorite Book:</h5>
-            <p id="favBook">No favorite book set!</p>
-            <h5><%= profileID %>'s Favorite Film:</h5>
-            <p id="favFilm">No favorite film set!</p>
-                            
-                            
+            <h5>Favorite Book:</h5>
+			<input type="text" id="favBook" name="favBook" class="fav" value="Not set">
+			<input id="updateBook" type="submit" value="Update Book" class="updateButton">
+			<h5>Favorite Film:</h5>
+			<input type="text" id="favFilm" name="favFilm" class="fav" value="Not set">
+			<input id="updateFilm" type="submit" value="Update Film" class="updateButton">               
         </main>
     </body>
     
@@ -33,23 +33,44 @@
         var socket = io();
         var loggedUser = "";
         var linkedUser = "<%= profileID %>";
+		var editable = false;
         socket.emit('getCurUser');
         socket.on('username',function(user){
         //Replace '#' in attr 'src' to own userpage
-            var userLink = $('<a/>').addClass('userLink').attr('href','/profile').text(user);
+            var userLink = $('<a/>').addClass('userLink').attr('href','/profile/'+user).text(user);
             $('body').prepend(userLink);
             loggedUser=user;
-                  loggedUser=linkedUser;
-            socket.emit('getReviewsUser', loggedUser);
-            socket.emit('getFavoriteMedia', loggedUser);
+			if(loggedUser==linkedUser) editable = true;
+            socket.emit('getReviewsUser', linkedUser);
+            socket.emit('getFavoriteMedia', linkedUser);
+			socket.emit('getCheckedMedia', linkedUser);
+			
+			if(!editable){
+				console.log("removing...")
+				$('.updateButton').remove();
+				$('#favBook').prop('readonly','readonly');
+			}
         });
-                  
+		
+        
         socket.on('favMedia', function(data){
-            if(data[0].favoriteBook!=null) document.getElementById("favBook").innerHTML = data[0].favoriteBook;
-            if(data[0].favoriteFilm!=null) document.getElementById("favFilm").innerHTML = data[0].favoriteFilm;
-        });
+			if(data[0].favoriteBook!=null) $('#favBook').val(data[0].favoriteBook);
+			if(data[0].favoriteFilm!=null) $('#favFilm').val(data[0].favoriteFilm);
+		});
+		
+		$('#updateBook').click(function(){
+		socket.emit('updateFav', {type:'book', value: $('#favBook').val(), userID: loggedUser })
+		});
+		$('#updateFilm').click(function(){
+			socket.emit('updateFav', {type:'film', value: $('#favFilm').val(), userID: loggedUser })
+		});
+		socket.on('updateSuccess', function(data){
+			alert('Favorites Updated')
+		});
         
         socket.on('userReviews', function(data){
+			var header = $('<h3/>').addClass('heading').text('Reviews');
+			$('main').append(header);
             data.forEach(function(entry){
                 var cover = $('<img>').addClass('listingImage').attr('src',entry.imageURL);
                 var title = $('<li/>').addClass('listingTitle').text(entry.title);
@@ -60,12 +81,35 @@
                 $('main').append(listing);
             });
         });
+		socket.on('checkedMedia', function(data){
+			if(editable){
+				var header = $('<h3/>').addClass('heading').text('Checked Out Media');
+				$('main').append(header);
+				data.forEach(function(entry){
+					var cover = $('<img>').addClass('listingImage').attr('src',entry.imageURL);
+					var title = $('<li/>').addClass('listingTitle').text(entry.title);
+					var creator;
+					if(entry.author!=null){
+						creator = $('<li/>').addClass('listingCreator').text(entry.author);
+					} else if(entry.director!=null){
+						creator = $('<li/>').addClass('listingCreator').text(entry.director);
+					}
+					var returnButton = $('<button/>').addClass('checkoutButton').text('Return');
+					returnButton.click(function(){
+						var payload = {userID: loggedUser, ID: entry.bookID, type: entry.type}
+						if(payload.ID==null) payload.ID=entry.filmID;
+						socket.emit('returnMedia',payload);
+					});
+					var info = $('<ul/>').addClass('listingText').append(title,creator);
+					var listing = $('<div/>').addClass('listing').append(cover,info,returnButton);
+					$('main').append(listing);
+				});
+			}
+		});
         
-        
-        
-    socket.on('refresh',function(){
-        window.location.reload();
-    });
-        </script>
+		socket.on('refresh',function(){
+			window.location.reload();
+		});
+    </script>
 </html>
 

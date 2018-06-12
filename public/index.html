@@ -40,7 +40,7 @@
 	socket.emit('getCurUser');
 	socket.on('username',function(user){
 		//Replace '#' in attr 'src' to own userpage
-		var userLink = $('<a/>').addClass('userLink').attr('href','/profile').text(user);
+		var userLink = $('<a/>').addClass('userLink').attr('href','/profile/'+user).text(user);
 		$('body').prepend(userLink);
 		loggedUser=user;
 	});
@@ -136,12 +136,20 @@
 		checkoutButton.hover(
 			function(){
 				checkoutButton.data('initialText', checkoutButton.text());
-				if(!loggedUser) checkoutButton.text("Must be Logged in");
+				if(loggedUser==null) checkoutButton.text("Must be Logged in");
 			},
 			function(){
 				checkoutButton.text(checkoutButton.data('initialText'));
 			}
 		);
+		
+		var addFav = $('<button/>').addClass('checkoutButton').text("Make Favorite");
+		addFav.click(function(){
+			if(loggedUser==null) alert("Must be logged in to perform this task!");
+			else{
+				socket.emit('updateFav', {userID: loggedUser, value: data.title, type: data.type});
+			}
+		});
 		
 		//-------REVIEWS-------------------
 		var reviewSection = $('<div/>').addClass('reviewSection');
@@ -172,7 +180,7 @@
 		else{
 			data.reviews.forEach(function(item){
 				var review = $('<div/>').addClass('reviewEntry');
-				var reviewer = $('<span/>').addClass('reviewer').text(item.userID);
+				var reviewer = $('<a/>').addClass('reviewer').attr('href','/profile/'+item.userID).text(item.userID);
 				var rating = $('<span/>').addClass('rating').text(item.rating);
 				ratings.push(item.rating);
 				var description = $('<p/>').addClass('description').text(item.description);
@@ -191,7 +199,7 @@
 		var reviewSection = $('<div/>').addClass('reviewSection');
 		if(loggedUser) reviewSection.append(writeReview,reviews);
 		else reviewSection.append(reviews)
-		var bigMedia = $('<div/>').addClass('bigMedia').append(backButton,mediaImg,mediaType,mediaCopies,checkoutButton,mediaTitle,mediaCreator,mediaDesc,avgRating,reviewSection);
+		var bigMedia = $('<div/>').addClass('bigMedia').append(backButton,mediaImg,mediaType,mediaCopies,checkoutButton,addFav,mediaTitle,mediaCreator,mediaDesc,avgRating,reviewSection);
 
 		$('#listings').addClass('hidden');
 		$('#catalogSearch').addClass('hidden');
@@ -200,6 +208,9 @@
 	
 	socket.on('checkoutSuccess', function(){
 		alert('Checked out this media!');
+	});
+	socket.on('updateSuccess', function(data){
+			alert('Favorites Updated')
 	});
 	
 	document.querySelector("#catalogSearch").addEventListener("input",function () {

@@ -54,7 +54,7 @@ app.get('/profile', function(req, res){
 });
 app.get('/profile/:profileID', function(req, res){
         var profileID = req.params.profileID;
-    app.set('view engine', 'ejs');
+		app.set('view engine', 'ejs');
         res.render('profile2.ejs', {profileID: profileID});
 });
 app.use(express.static('public')); //serves index.html
