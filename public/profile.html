@@ -1,7 +1,7 @@
 <!DOCTYPE html> 
 <html>
 <head>
-	<title>Donate a book</title>
+	<title>My Profile</title>
 	<link type="text/css" rel="stylesheet" href="/css/index.css">
 	<script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
@@ -26,6 +26,8 @@
 	<h5>Favorite Film:</h5>
 	<input type="text" id="favFilm" name="favFilm" class="fav" value="Not set">
 	<input id="updateFilm" type="submit" value="Update Film" class="updateButton">
+        
+        
 </main>
 </body>
 
@@ -39,7 +41,7 @@
 		var userLink = $('<a/>').addClass('userLink').attr('href','/profile').text(user);
 		$('body').prepend(userLink);
 		loggedUser=user;
-		
+              
 		socket.emit('getCheckedMedia', loggedUser);
 		socket.emit('getFavoriteMedia', loggedUser);
 	});

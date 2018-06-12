@@ -52,6 +52,11 @@ app.get('/login', function(req, res){
 app.get('/profile', function(req, res){
 	res.sendFile(__dirname + '/public/profile.html');
 });
+app.get('/profile/:profileID', function(req, res){
+        var profileID = req.params.profileID;
+    app.set('view engine', 'ejs');
+        res.render('profile2.ejs', {profileID: profileID});
+});
 app.use(express.static('public')); //serves index.html
 
 
@@ -173,6 +178,15 @@ io.on('connection', function(socket){
 			con.release();
 		});
 	});
+      
+    socket.on('getReviewsUser',function(data){
+        pool.getConnection(function(err, con){
+            if(err)
+                con.release();
+            sqlQueries.getReviewsUser(data,con,socket);
+            con.release();
+        });
+    });
 	socket.on('getCheckedMedia',function(data){ 
 		pool.getConnection(function(err, con){
 			if(err)

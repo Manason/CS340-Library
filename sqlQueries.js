@@ -193,6 +193,13 @@ module.exports = {
 			socket.emit('favMedia',res);
 		});
 	},
+    getReviewsUser : function(data,con,socket){
+        var q = "SELECT M.title, M.imageURL, R.rating, R.description, R.date FROM Review R, Media M WHERE M.mediaID=R.mediaID AND userID=?"
+        con.query(q,[data],function(err,res){
+            if(err) console.log("error getting reviews");
+            socket.emit('userReviews',res);
+        });
+    },
 	updateFav : function(data,con,socket){
 		var query = "";
 		if(data.type=="book") query="UPDATE User SET favoriteBook=? WHERE userID=?";

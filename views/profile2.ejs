@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title><%= profileID %>'s Profile</title>
+        <link type="text/css" rel="stylesheet" href="/css/index.css">
+            <script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+            <script src="/socket.io/socket.io.js"></script>
+    </head>
+    
+    <body>
+        <h1>Library</h1>
+        <ul id="nav">
+            <li><a href="/">Catalog</a></li>
+            <li><a href="/donate/book">Donate Book</a></li>
+            <li><a href="/donate/film">Donate Film</a></li>
+            <li><a href="/signup">Sign Up</a></li>
+            <li><a href="/login">Log In</a></li>
+            
+        </ul>
+        <main>
+            <h2><%= profileID %>'s Profile</h2>
+            
+            <h5><%= profileID %>'s Favorite Book:</h5>
+            <p id="favBook">No favorite book set!</p>
+            <h5><%= profileID %>'s Favorite Film:</h5>
+            <p id="favFilm">No favorite film set!</p>
+                            
+                            
+        </main>
+    </body>
+    
+    <script>
+        var socket = io();
+        var loggedUser = "";
+        var linkedUser = "<%= profileID %>";
+        socket.emit('getCurUser');
+        socket.on('username',function(user){
+        //Replace '#' in attr 'src' to own userpage
+            var userLink = $('<a/>').addClass('userLink').attr('href','/profile').text(user);
+            $('body').prepend(userLink);
+            loggedUser=user;
+                  loggedUser=linkedUser;
+            socket.emit('getReviewsUser', loggedUser);
+            socket.emit('getFavoriteMedia', loggedUser);
+        });
+                  
+        socket.on('favMedia', function(data){
+            if(data[0].favoriteBook!=null) document.getElementById("favBook").innerHTML = data[0].favoriteBook;
+            if(data[0].favoriteFilm!=null) document.getElementById("favFilm").innerHTML = data[0].favoriteFilm;
+        });
+        
+        socket.on('userReviews', function(data){
+            data.forEach(function(entry){
+                var cover = $('<img>').addClass('listingImage').attr('src',entry.imageURL);
+                var title = $('<li/>').addClass('listingTitle').text(entry.title);
+                var rating = $('<li/>').addClass('description').text(entry.rating+" stars");
+                var desc = $('<p/>').addClass('description').text(entry.description);
+                var info = $('<ul/>').addClass('listingText').append(title,rating,desc);
+                var listing = $('<div/>').addClass('listing').append(cover,info);
+                $('main').append(listing);
+            });
+        });
+        
+        
+        
+    socket.on('refresh',function(){
+        window.location.reload();
+    });
+        </script>
+</html>
+
