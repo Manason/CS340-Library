@@ -4,11 +4,13 @@
 *Install Nodejs [Here](https://nodejs.org/en/)*
 
 Create a file config.json such that:
-```{
+```
+{
 	"dbhost" : <DB_HOST>,
 	"dbuser" : <DB_USER>,
 	"dbpass" : <DB_PASS>
-}```
+}
+```
 
 Run the command `npm install` in the root directory to install the required dependencies.
 
