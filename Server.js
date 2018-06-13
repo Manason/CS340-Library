@@ -37,6 +37,9 @@ http.listen(parseInt(process.argv[2]), function(){
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/public/index.html');
 });
+app.get('/help', function(req, res){
+	res.sendFile(__dirname + '/public/help.html');
+});
 app.get('/donate/book', function(req, res){
 	res.sendFile(__dirname + '/public/donateBook.html');
 });

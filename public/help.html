@@ -1,0 +1,58 @@
+<!DOCTYPE html> 
+<html>
+<head>
+	<title>Help Page</title>
+	<link type="text/css" rel="stylesheet" href="/css/index.css">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+<a id="instructionsButton" href="/help"><i class="material-icons">help</i></a>
+<h1>Library</h1>
+<ul id="nav">
+	<li><a href="/">Catalog</a></li>
+	<li><a href="/donate/book">Donate Book</a></li>
+	<li><a href="/donate/film">Donate Film</a></li>
+	<li><a href="/signup">Sign Up</a></li>
+	<li><a href="/login">Log In</a></li>
+	
+</ul>
+	<h2>How to use this site</h2>
+		<div id="instructions">
+			<h3>Catalog</h3>
+			<p>Click the catalog page to look at the catalog. To look at a entry in the catalog, simply click on any media. These are the blocks with book or film covers on them. This shows all the information available about the media, from Title, Author, Description, type, # copies, and average rating. The reviews also are displayed here, and can be left from here.</p>
+			<p>To leave a review, you must be logged in.</p>
+			<hr>
+			<h3>Accounts</h3>
+			<p>To Sign up for an account, click on the Sign Up link on the main navigation bar. Enter a username and password to sign up with, and click submit. If the username is being used by someone else, the sign up will fail and you will be notified, and prompted to enter a new one. Once signed up, you are automatically logged in, and brought back to the catalog.</p>
+			<hr>
+			<h3>Reveiws</h3>
+			<p>Once logged in, we can leave a review. Go to the back to the Catalog page, and click on any media, like from feature #2. On the left below the image of the book, there is a section entitled “Post Review.” Enter a rating from 1-5 and optionally, you can write a description of why you scored the way you did. Once satisfied, click submit to submit the review. If you back out of the book page and click into it again, your review should be on the list on the right side.</p>
+			<hr>
+			<h3>Checking out and Returning a book</h3>
+			<p>When you want to check out a book, click into any media page. On the right side, make sure that there is at least one copy to check out, and make sure that you are logged in. If these two things are true, then click on the checkout button, and that book is now checked out and assigned to you, until you return it.</p>
+			<p>When you want to return the book, click on your profile. Your profile link is on the top right of the screen, and is only visible when you are logged in. Scroll down past your favorites and reviews, and you see all your checked out media. Simply click the return button on the right side for whichever media you wish to return, and it is returned immediately.</p>
+			<hr>
+			<h3>Donation</h3>
+			<p>To donate a book or film to the library, click the donate book or donate film button. From here, enter all information pertaining to the book that you are donating. Once submitted, the book or film will be added to the catalog.</p>
+		</div>
+</body>
+
+<script>
+	var socket = io();
+	$('#submit').click(function(){
+		var data = {title : $('#newTitle').val(), author : $('#newAuthor').val(), desc : $('#newDescription').val(), pages : $('#newNumPages').val(), section : $('#newSection').val(), imageURL : $('#newImage').val()};
+		console.log(data);
+		socket.emit('bookdonate', data); 
+	});
+	socket.emit('getCurUser');
+	socket.on('username',function(user){
+		//Replace '#' in attr 'src' to own userpage
+		var userLink = $('<a/>').addClass('userLink').attr('href','/profile/'+user).text(user);
+		$('body').prepend(userLink)
+	});
+</script>
+</html>
+
