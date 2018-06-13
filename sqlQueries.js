@@ -21,8 +21,8 @@ module.exports = {
 		var check = "SELECT COUNT(*) AS entries FROM Media M, Book B WHERE M.mediaID=B.mediaID AND M.title=? AND B.author=?";
 		con.query(check,[data.title,data.author],function(err,res){
 			if(res[0].entries==0){
-				var ins = "INSERT INTO Media(title,description,type,sectionName,imageURL) VALUES(?,?,'book',?,NULL)"
-				con.query(ins,[data.title,data.desc,data.section],function(err,res){
+				var ins = "INSERT INTO Media(title,description,type,sectionName,imageURL) VALUES(?,?,'book',?,?)"
+				con.query(ins,[data.title,data.desc,data.section,data.imageURL],function(err,res){
 					if(err) throw err;
 				});
 				ins = "INSERT INTO Book(author,numPages,mediaID,userID) VALUES(?,?,(SELECT MAX(mediaID) FROM Media),NULL)"

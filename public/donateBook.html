@@ -3,11 +3,13 @@
 <head>
 	<title>Donate a book</title>
 	<link type="text/css" rel="stylesheet" href="/css/index.css">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 </head>
 
 <body>
+<a id="instructionsButton" href="/help"><i class="material-icons">help</i></a>
 <h1>Library</h1>
 <ul id="nav">
 	<li><a href="/">Catalog</a></li>
@@ -29,6 +31,8 @@
 		<input type="number" id="newNumPages" name="newNumPages" class="pagesInput"><br>
 		Genre:<br>
 		<input type="text" id="newSection" name="newSection" class="genreInput"><br>
+		Image URL:<br>
+		<input type="text" id="newImage" name="newImage" class="newImage"><br>
 		
 		<input id="submit" type="submit" value="Submit">
 	
@@ -39,8 +43,8 @@
 <script>
 	var socket = io();
 	$('#submit').click(function(){
-		console.log("sending data to the server");
-		var data = {title : $('#newTitle').val(), author : $('#newAuthor').val(), desc : $('#newDescription').val(), pages : $('#newNumPages').val(), section : $('#newSection').val()};
+		var data = {title : $('#newTitle').val(), author : $('#newAuthor').val(), desc : $('#newDescription').val(), pages : $('#newNumPages').val(), section : $('#newSection').val(), imageURL : $('#newImage').val()};
+		console.log(data);
 		socket.emit('bookdonate', data); 
 	});
 	socket.emit('getCurUser');

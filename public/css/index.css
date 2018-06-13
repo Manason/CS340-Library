@@ -31,6 +31,19 @@ textarea{
 	border-radius:4px;
 	font-size:18px;
 }
+#instructions{
+	margin: 0 auto;
+	text-align:left;
+	max-width:800px;
+}
+#instructionsButton{
+	float:right;
+	color:black;
+	margin: 0 10px;
+}
+#instructionsButton:visited{
+	color:black;
+}
 #nav{
 	border-style: solid none;
 	border-width: 1px;
